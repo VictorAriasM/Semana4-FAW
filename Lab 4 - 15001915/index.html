@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materialize</title>
+    <link rel="stylesheet" href="./css/materialize.min.css">
+</head>
+
+<body>
+    <header class="blue">
+        <div class="container">
+            <div class="row valign-wrapper">
+                <div class="col s2">
+                    <img src="./logo-galileo.png" alt="" style="width: 150px;">
+                </div>
+                <div class="col s10">
+                    <h4 class="center-align">Laboratorio #4</h4>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m4" >
+                <div class="card" style="border-radius:15px;">
+                    <div class="card-content">
+                        <span class="card-title"><b>Opciones</b></span>
+                        <div class="row" id="formulario">
+                            <input type="number" id="inf" placeholder="Limite Inferior" min="1" max="100">
+                            <input type="number" id="sup" placeholder="Limite Superior" min="1" max="100">
+                            
+                            <div class="switch">
+                                <label>Mostrar una</label>
+                                <label style="float:right">
+                                    <input type="checkbox" id="chkoneonly">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                            <br>
+                            <div class="row" style="text-align: center;">
+                                <button class="waves-effect waves-light btn" onclick="getPictures()">Mostrar</button>
+                            </div>
+                            <div class="row" id="alerta"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="formulario1" class="col s12 m8">
+                <div class="card" style="border-radius:15px">
+                    <div class="card-content">
+                        <div class="row" id="picturebox">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="./js/materialize.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                M.Tabs.init(document.querySelectorAll('.tabs'));
+                M.Datepicker.init(document.querySelectorAll('.datepicker'));
+                M.FormSelect.init(document.querySelectorAll('select'));
+            });
+
+            document.getElementById('inf').addEventListener('input', function() {
+        if (this.value < 1 || this.value > 100) {
+                alertPopup('El valor debe estar entre 1 y 100');
+                this.value = ''; 
+                }
+            });
+
+            document.getElementById('sup').addEventListener('input', function() {
+                if (this.value < 1 || this.value > 100) {
+                    alertPopup('El valor debe estar entre 1 y 100');
+                    this.value = '';
+                }
+            });
+            function getPictures() {
+            var solouna = document.getElementById('chkoneonly');
+            var liminf = document.getElementById('inf').value;
+            var limsup = document.getElementById('sup').value;
+
+            var contador = Number(liminf);
+            var valorfinal = (solouna.checked ? (Number(liminf)+1) : Number(limsup));
+            for(contador; contador < valorfinal; contador++){
+                document.getElementById('picturebox').innerHTML = '';
+                var url = ' http://jsonplaceholder.typicode.com/photos/' + contador;
+                var xhr = new XMLHttpRequest();
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var img = document.createElement('img');
+                    img.src = data.url;
+                    img.style.width = '100px';
+                    img.style.height = '100px';
+                    img.style.padding = '5px';
+                    document.getElementById('picturebox').appendChild(img);
+                })
+                .catch(error => console.log(error));
+            }
+            }
+            
+            function alertPopup(message) {
+                var alertDiv = document.createElement('div');
+                alertDiv.textContent = message;
+                alertDiv.style.position = 'relative';
+                alertDiv.style.backgroundColor = '#d52525';
+                alertDiv.style.color = '#fff';
+                alertDiv.style.padding = '10px 20px';
+                alertDiv.style.borderRadius = '5px';
+                alertDiv.style.zIndex = '1000';
+                document.getElementById('alerta').appendChild(alertDiv);
+                
+                setTimeout(function() {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }, 2000);
+            }
+
+        </script>
+
+</body>
+
+</html>
